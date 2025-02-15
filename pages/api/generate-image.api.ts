@@ -3,22 +3,8 @@ import { getServerSession } from "next-auth/next";
 import type { Session } from "next-auth";
 import B2 from 'backblaze-b2';
 import { databaseAPI } from '@lib/DatabaseAPI';
+import type { ImageMetadata } from '@lib/DatabaseAPI';
 import { authOptions } from './auth/[...nextauth]';
-
-interface ImageMetadata {
-  id: string;
-  prompt: string;
-  imageUrl: string;
-  backblazeUrl: string;
-  seed?: number;
-  width: number;
-  height: number;
-  contentType: string;
-  hasNsfwConcepts?: string;
-  fullResult: string;
-  userId: string;
-  createdAt: string;
-}
 
 interface ApiResponse {
   imageUrl: string | null;
@@ -109,13 +95,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const imageBuffer = Buffer.from(pythonResult.image, 'base64');
     
-    // Upload the image buffer directly to Backblaze
-    const backblazeUrl = await uploadToBackblaze(imageBuffer, prompt);
-
     const imageMetadata = await databaseAPI.saveImageMetadata({
       prompt,
-      imageUrl: backblazeUrl,
-      backblazeUrl,
+      imageData: imageBuffer,
       width: width,
       height: height,
       contentType: 'image/jpeg',
@@ -123,17 +105,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       hasNsfwConcepts: "false",
       fullResult: JSON.stringify(pythonResult.response),
       userId: session.user.id as string,
-    });
+    } as Omit<ImageMetadata, 'id' | 'createdAt'>);
 
     await databaseAPI.updateUserCredits(session.user.id, -creditCost);
 
     const responsePayload: ApiResponse = {
-      imageUrl: backblazeUrl,
-      backblazeUrl,
+      imageUrl: `/api/images/${imageMetadata.id}`,
+      backblazeUrl: null,
       fullResult: pythonResult.response,
       imageMetadata: {
         id: imageMetadata.id.toString(),
-        backblazeUrl: imageMetadata.backblazeUrl,
+        backblazeUrl: '',
       },
       creditsUsed: creditCost,
       remainingCredits: user.credits - creditCost
@@ -148,27 +130,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-async function uploadToBackblaze(buffer: Buffer, prompt: string): Promise<string> {
-  const b2 = new B2({
-    applicationKeyId: process.env.B2_APPLICATION_KEY_ID as string,
-    applicationKey: process.env.B2_APPLICATION_KEY as string,
-  });
-
-  await b2.authorize();
-  const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({ bucketId: process.env.B2_BUCKET_ID as string });
-
-  const fileName = `${Date.now()}-${prompt.slice(0, 20).replace(/[^a-z0-9]/gi, '_')}.jpg`;
-
-  const { data } = await b2.uploadFile({
-    uploadUrl,
-    uploadAuthToken: authorizationToken,
-    fileName,
-    data: buffer,
-    contentType: 'image/jpeg',
-  });
-
-  return `https://f005.backblazeb2.com/file/${process.env.B2_BUCKET_NAME}/${data.fileName}`;
-}
 
 function handleError(error: unknown, res: NextApiResponse) {
   if (error instanceof Error) {

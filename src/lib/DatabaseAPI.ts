@@ -5,14 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 export interface ImageMetadata {
   id: number;
   prompt: string;
-  imageUrl: string;
-  backblazeUrl: string;
   seed: number;
   width: number;
   height: number;
   contentType: string;
   hasNsfwConcepts: string;
   fullResult: string;
+  imageData: Buffer;
   createdAt: string;
   userId: string;
 }
@@ -54,14 +53,13 @@ export class DatabaseAPI {
       CREATE TABLE IF NOT EXISTS image_metadata (
         id SERIAL PRIMARY KEY,
         prompt TEXT,
-        imageUrl TEXT,
-        backblazeUrl TEXT,
         seed INTEGER,
         width INTEGER,
         height INTEGER,
         contentType TEXT,
         hasNsfwConcepts TEXT,
         fullResult TEXT,
+        imageData BYTEA,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         userId UUID REFERENCES users(id)
       );
@@ -130,18 +128,17 @@ export class DatabaseAPI {
 
     const result = await this.pool.query(
       `INSERT INTO image_metadata (
-        prompt, imageUrl, backblazeUrl, seed, width, height, contentType, hasNsfwConcepts, fullResult, userId
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+        prompt, seed, width, height, contentType, hasNsfwConcepts, fullResult, imageData, userId
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [
         data.prompt,
-        data.imageUrl,
-        data.backblazeUrl,
         data.seed,
         data.width,
         data.height,
         data.contentType,
         data.hasNsfwConcepts,
         data.fullResult,
+        data.imageData,
         data.userId,
       ]
     );
