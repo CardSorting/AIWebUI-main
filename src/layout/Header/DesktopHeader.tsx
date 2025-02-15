@@ -1,10 +1,11 @@
 import { FC, useState } from 'react';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import { useTheme, useMediaQuery, Box, Button, IconButton, Menu, MenuItem, Link } from '@mui/material';
+import { useTheme, useMediaQuery, Box, Button, IconButton, Menu, MenuItem, Link, Divider } from '@mui/material';
 import { Forward as ForwardIcon, Menu as MenuIcon } from '@mui/icons-material';
 import Routes from '@routes';
 import { NavItems } from './styles';
+import UserMenu from './UserMenu';
 
 const DesktopHeader: FC = () => {
   const { pathname } = useRouter();
@@ -57,25 +58,7 @@ const DesktopHeader: FC = () => {
           Get Started Now
         </Button>
       </NextLink>
-      <Link
-        href="https://patreon.com/PlayMoreTCG?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink"
-        target="_blank"
-        rel="noopener"
-        sx={{
-          mx: { xs: 0, sm: 2 },
-          my: { xs: 1, sm: 0 },
-          textDecoration: 'none',
-          fontWeight: 'bold',
-          color: theme.palette.primary.main,
-          '&:hover': {
-            color: theme.palette.secondary.main,
-          },
-          width: { xs: '100%', sm: 'auto' },
-          textAlign: { xs: 'center', sm: 'left' },
-        }}
-      >
-        Support me on Patreon
-      </Link>
+      <UserMenu />
     </>
   );
 
@@ -113,7 +96,7 @@ const DesktopHeader: FC = () => {
           </Menu>
         </>
       ) : (
-        <NavItems sx={{ display: 'flex', gap: 2 }}>{navContent}</NavItems>
+        <NavItems sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>{navContent}</NavItems>
       )}
     </Box>
   );

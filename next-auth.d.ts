@@ -1,14 +1,19 @@
-import "next-auth"
+import 'next-auth';
 
-declare module "next-auth" {
-  interface User {
-    credits: number
-  }
-
+declare module 'next-auth' {
   interface Session {
     user: {
-      id: string
-      credits: number
-    } & DefaultSession["user"]
+      id: string;
+      name: string;
+      email: string;
+      credits: number;
+    }
+  }
+  
+  interface User {
+    id: string;
+    name: string;
+    email: string;
+    credits: number;
   }
 }

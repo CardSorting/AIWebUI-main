@@ -1,12 +1,14 @@
 import NextAuth from "next-auth/next";
 import type { JWT } from "next-auth/jwt";
-import type { Session, User as AuthUser } from "next-auth";
+import type { Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { databaseAPI } from "@lib/DatabaseAPI";
+import { databaseAPI, User as DbUser } from "@lib/DatabaseAPI";
 
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
+    name?: string;
+    email?: string;
     credits?: number;
   }
 }
@@ -20,12 +22,13 @@ declare module "next-auth" {
       credits: number;
     }
   }
-  interface User {
-    id: string;
-    email: string;
-    name: string;
-    credits: number;
-  }
+}
+
+interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  credits: number;
 }
 
 const handler = NextAuth({
@@ -66,23 +69,24 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.credits = (user as any).credits;
+        const authUser = user as AuthUser;
+        token.id = authUser.id;
+        token.name = authUser.name;
+        token.email = authUser.email;
+        token.credits = authUser.credits;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        return {
-          ...session,
-          user: {
-            ...session.user,
-            id: token.id as string,
-            credits: token.credits as number,
-          },
-        };
-      }
-      return session;
+      return {
+        ...session,
+        user: {
+          id: token.id as string,
+          name: token.name as string,
+          email: token.email as string,
+          credits: token.credits as number,
+        },
+      };
     },
   },
   session: {
