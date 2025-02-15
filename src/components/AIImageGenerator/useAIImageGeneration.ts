@@ -71,6 +71,7 @@ export const useAIImageGeneration = () => {
       const response = await fetchWithRetry('/api/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ prompt, ...options }),
         signal: abortControllerRef.current.signal,
       });
