@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface ImageMetadata {
   id: number;
@@ -39,13 +40,15 @@ export class DatabaseAPI {
     // Create tables if they don't exist
     await this.pool.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
+        id UUID PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         credits INTEGER DEFAULT 10,
         membershipTier TEXT,
-        membershipExpiry BIGINT
+        membershipExpiry TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
       CREATE TABLE IF NOT EXISTS image_metadata (
@@ -60,7 +63,7 @@ export class DatabaseAPI {
         hasNsfwConcepts TEXT,
         fullResult TEXT,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        userId INTEGER REFERENCES users(id)
+        userId UUID REFERENCES users(id)
       );
     `);
   }
@@ -77,9 +80,10 @@ export class DatabaseAPI {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Insert user with default credits
+      const newId = uuidv4();
       const result = await client.query(
-        'INSERT INTO users (name, email, password, credits) VALUES ($1, $2, $3, $4) RETURNING *',
-        [name, email, hashedPassword, 10]
+        'INSERT INTO users (id, name, email, password, credits) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [newId, name, email, hashedPassword, 10]
       );
 
       const user = result.rows[0];
