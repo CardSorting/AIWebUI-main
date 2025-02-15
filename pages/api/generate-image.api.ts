@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from '@auth0/nextjs-auth0'; // Using Auth0's session management
+import { getServerSession } from "next-auth/next";
+import type { Session } from "next-auth";
 import B2 from 'backblaze-b2';
-import fetch from 'node-fetch';
 import { databaseAPI } from '@lib/DatabaseAPI';
+import { authOptions } from './auth/[...nextauth]';
 
 interface ImageMetadata {
   id: string;
@@ -32,7 +33,6 @@ interface ApiResponse {
 }
 
 const CREDIT_COST_PER_MEGAPIXEL = 5; // Adjust this value based on your pricing strategy
-const MEMBERSHIP_CACHE_DURATION = 24 * 60 * 60 * 1000; // Cache duration: 24 hours
 
 export const config = {
   api: {
@@ -42,46 +42,13 @@ export const config = {
   },
 };
 
-// Function to fetch Patreon membership status
-async function fetchPatreonMemberStatus(accessToken: string) {
-  const response = await fetch('https://www.patreon.com/api/oauth2/v2/identity?include=memberships', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch Patreon data');
-  }
-
-  const data: any = await response.json();
-  const membership = data.included?.find((inc: any) => inc.type === 'member');
-  return membership?.attributes?.patron_status || null;
-}
-
-// Function to check cache and fetch if expired or missing
-async function getCachedMembershipStatus(userId: string, accessToken: string) {
-  const cachedData = await databaseAPI.getCachedMembershipStatus(userId);
-  const currentTime = new Date().getTime();
-
-  if (cachedData && cachedData.membershipExpiry && cachedData.membershipExpiry > currentTime) {
-    return cachedData.membershipTier;
-  }
-
-  const membershipTier = await fetchPatreonMemberStatus(accessToken);
-  const expiry = currentTime + MEMBERSHIP_CACHE_DURATION;
-  await databaseAPI.cacheMembershipStatus(userId, membershipTier, expiry);
-
-  return membershipTier;
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const session = await getSession(req, res);
-  if (!session || !session.user) {
+  const session = await getServerSession(req, res, authOptions) as Session | null;
+  if (!session?.user) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -93,20 +60,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     await databaseAPI.initialize();
-
-    const patreonAccessToken = session.user.patreonAccessToken;
-    const membershipTier = await getCachedMembershipStatus(session.user.id, patreonAccessToken);
-
-    let userCredits = 0;
-    if (membershipTier === 'active_patron') {
-      userCredits = 1000;
-    } else if (membershipTier === 'former_patron') {
-      userCredits = 50;
-    } else {
-      userCredits = 0;
-    }
-
-    await databaseAPI.updateUserCredits(session.user.id, userCredits);
 
     const [width, height] = imageSize.split('x').map(Number);
     const megapixels = (width * height) / 1000000;
@@ -169,7 +122,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       seed: 0,
       hasNsfwConcepts: "false",
       fullResult: JSON.stringify(pythonResult.response),
-      userId: session.user.id,
+      userId: session.user.id as string,
     });
 
     await databaseAPI.updateUserCredits(session.user.id, -creditCost);

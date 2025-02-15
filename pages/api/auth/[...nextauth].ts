@@ -1,37 +1,13 @@
 import NextAuth from "next-auth/next";
-import type { JWT } from "next-auth/jwt";
-import type { Session } from "next-auth";
+import type { AuthCallbacks } from "@/types/next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { databaseAPI, User as DbUser } from "@lib/DatabaseAPI";
+import { NextAuthAdapter } from "@/infrastructure/auth/NextAuthAdapter";
+import { container } from "@/infrastructure/di/container";
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string;
-    name?: string;
-    email?: string;
-    credits?: number;
-  }
-}
+// Initialize database schema when the API route is first loaded
+container.initializeDatabase().catch(console.error);
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      email: string;
-      name: string;
-      credits: number;
-    }
-  }
-}
-
-interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  credits: number;
-}
-
-const handler = NextAuth({
+const authConfig = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -42,57 +18,66 @@ const handler = NextAuth({
       async authorize(credentials) {
         if (!credentials) return null;
 
-        await databaseAPI.initialize();
         try {
-          const user = await databaseAPI.verifyUserCredentials(
+          const user = await NextAuthAdapter.verifyCredentials(
             credentials.email,
             credentials.password
           );
-          if (user) {
-            return {
-              id: user.id.toString(),
-              email: user.email,
-              name: user.name,
-              credits: user.credits,
-            };
-          }
-          return null;
+
+          return user;
         } catch (error) {
           console.error("Error authorizing user:", error);
           return null;
-        } finally {
-          await databaseAPI.close();
         }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    jwt: async ({ token, user, trigger, session }: AuthCallbacks["jwt"]) => {
       if (user) {
-        const authUser = user as AuthUser;
-        token.id = authUser.id;
-        token.name = authUser.name;
-        token.email = authUser.email;
-        token.credits = authUser.credits;
+        // Initial sign in
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.credits = user.credits;
+        token.membershipTier = user.membershipTier;
+        token.membershipExpiry = user.membershipExpiry;
+      } else if (trigger === "update" && session?.user) {
+        // Handle session updates
+        return { ...token, ...session.user };
+      } else if (token.email) {
+        // Subsequent requests: refresh user data
+        const updatedUser = await NextAuthAdapter.getUserByEmail(token.email);
+        if (updatedUser) {
+          token.credits = updatedUser.credits;
+          token.membershipTier = updatedUser.membershipTier;
+          token.membershipExpiry = updatedUser.membershipExpiry;
+        }
       }
       return token;
     },
-    async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          id: token.id as string,
-          name: token.name as string,
-          email: token.email as string,
-          credits: token.credits as number,
-        },
-      };
+    // @ts-ignore: workaround for user type mismatch in session callback
+    session: async ({ session, token }: AuthCallbacks["session"]) => {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name || "";
+        session.user.email = token.email || "";
+        session.user.credits = token.credits;
+        session.user.membershipTier = token.membershipTier;
+        session.user.membershipExpiry = token.membershipExpiry;
+      }
+      return session;
     },
   },
+  pages: {
+    signIn: "/login",
+  },
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.AUTH_SECRET,
-});
+};
 
-export default handler;
+export default NextAuth(authConfig as any);
+export const authOptions = authConfig as any;
