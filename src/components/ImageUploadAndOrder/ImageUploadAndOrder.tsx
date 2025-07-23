@@ -1,5 +1,20 @@
-import React, { useState, useCallback } from 'react';
-import { Box, Button, Grid, Typography, Card, CardMedia, CardActions, CardContent, Modal, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import React, { useCallback, useState } from 'react';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { loadStripe } from '@stripe/stripe-js';
 import FileUploader from '@components/inputs/FileUploader';
 import { FileUploaderProps } from '@components/inputs/FileUploader/types';
@@ -15,22 +30,32 @@ interface PrintOptions {
   quantity: number;
 }
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string,
+);
 
 const ImageUploadAndOrder: React.FC = () => {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
-  const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(null);
-  const [printOptions, setPrintOptions] = useState<PrintOptions>({ size: '2.5x3.5', quantity: 1 });
+  const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(
+    null,
+  );
+  const [printOptions, setPrintOptions] = useState<PrintOptions>({
+    size: '2.5x3.5',
+    quantity: 1,
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleImageUpload: FileUploaderProps['onChange'] = useCallback((name, src) => {
-    const newImage: UploadedImage = {
-      id: Date.now().toString(),
-      src,
-      name,
-    };
-    setUploadedImages(prevImages => [...prevImages, newImage]);
-  }, []);
+  const handleImageUpload: FileUploaderProps['onChange'] = useCallback(
+    (name, src) => {
+      const newImage: UploadedImage = {
+        id: Date.now().toString(),
+        src,
+        name,
+      };
+      setUploadedImages(prevImages => [...prevImages, newImage]);
+    },
+    [],
+  );
 
   const handleOrderPrint = (image: UploadedImage) => {
     setSelectedImage(image);
@@ -43,7 +68,9 @@ const ImageUploadAndOrder: React.FC = () => {
     setPrintOptions({ size: '2.5x3.5', quantity: 1 });
   };
 
-  const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleOptionChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = event.target;
     setPrintOptions(prevOptions => ({ ...prevOptions, [name]: value }));
   };
@@ -90,7 +117,7 @@ const ImageUploadAndOrder: React.FC = () => {
         onChange={handleImageUpload}
       />
       <Grid container spacing={2} sx={{ mt: 4 }}>
-        {uploadedImages.map((image) => (
+        {uploadedImages.map(image => (
           <Grid item xs={12} sm={6} md={4} key={image.id}>
             <Card>
               <CardMedia
@@ -105,7 +132,11 @@ const ImageUploadAndOrder: React.FC = () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" color="primary" onClick={() => handleOrderPrint(image)}>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => handleOrderPrint(image)}
+                >
                   Order Print
                 </Button>
               </CardActions>
@@ -114,7 +145,18 @@ const ImageUploadAndOrder: React.FC = () => {
         ))}
       </Grid>
       <Modal open={isModalOpen} onClose={handleCloseModal}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
           <Typography variant="h6" component="h2" gutterBottom>
             Order Print
           </Typography>
@@ -140,7 +182,12 @@ const ImageUploadAndOrder: React.FC = () => {
             onChange={handleOptionChange}
             inputProps={{ min: 1 }}
           />
-          <Button variant="contained" color="primary" onClick={handleSubmitOrder} sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmitOrder}
+            sx={{ mt: 2 }}
+          >
             Place Order
           </Button>
         </Box>

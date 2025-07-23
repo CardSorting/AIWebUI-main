@@ -2,19 +2,22 @@ import { Pool } from 'pg';
 import { User } from '../../../../domain/entities/User';
 import { Email } from '../../../../domain/value-objects/Email';
 import { UserId } from '../../../../domain/value-objects/UserId';
-import { IUserRepository, IUserQueries, IUserFactory } from '../../../../domain/repositories/IUserRepository';
+import {
+  IUserFactory,
+  IUserQueries,
+  IUserRepository,
+} from '../../../../domain/repositories/IUserRepository';
 
 export class PostgresUserRepository implements IUserRepository, IUserQueries {
   constructor(
     private readonly pool: Pool,
-    private readonly userFactory: IUserFactory
+    private readonly userFactory: IUserFactory,
   ) {}
 
   async findById(id: UserId): Promise<User | null> {
-    const result = await this.pool.query(
-      'SELECT * FROM users WHERE id = $1',
-      [id.value]
-    );
+    const result = await this.pool.query('SELECT * FROM users WHERE id = $1', [
+      id.value,
+    ]);
 
     if (!result.rows[0]) return null;
 
@@ -34,7 +37,7 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
   async findByEmail(email: Email): Promise<User | null> {
     const result = await this.pool.query(
       'SELECT * FROM users WHERE email = $1',
-      [email.value]
+      [email.value],
     );
 
     if (!result.rows[0]) return null;
@@ -64,7 +67,7 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
         user.credits,
         user.membershipTier,
         user.membershipExpiry,
-      ]
+      ],
     );
   }
 
@@ -80,7 +83,7 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
         user.credits,
         user.membershipTier,
         user.membershipExpiry,
-      ]
+      ],
     );
   }
 
@@ -91,7 +94,7 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
   async exists(email: Email): Promise<boolean> {
     const result = await this.pool.query(
       'SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)',
-      [email.value]
+      [email.value],
     );
     return result.rows[0].exists;
   }
@@ -100,7 +103,7 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
   async getUserCredits(id: UserId): Promise<number> {
     const result = await this.pool.query(
       'SELECT credits FROM users WHERE id = $1',
-      [id.value]
+      [id.value],
     );
     return result.rows[0]?.credits ?? 0;
   }
@@ -111,9 +114,9 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
   }> {
     const result = await this.pool.query(
       'SELECT membership_tier, membership_expiry FROM users WHERE id = $1',
-      [id.value]
+      [id.value],
     );
-    
+
     return {
       tier: result.rows[0]?.membership_tier ?? null,
       expiryDate: result.rows[0]?.membership_expiry
@@ -125,7 +128,7 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
   async isEmailTaken(email: string): Promise<boolean> {
     const result = await this.pool.query(
       'SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)',
-      [email]
+      [email],
     );
     return result.rows[0].exists;
   }
@@ -137,13 +140,13 @@ export class PostgresUserRepository implements IUserRepository, IUserQueries {
 
   async getUsersCreatedBetween(
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<Array<{ id: string; email: string; createdAt: Date }>> {
     const result = await this.pool.query(
       'SELECT id, email, created_at FROM users WHERE created_at BETWEEN $1 AND $2',
-      [startDate, endDate]
+      [startDate, endDate],
     );
-    
+
     return result.rows.map(row => ({
       id: row.id,
       email: row.email,

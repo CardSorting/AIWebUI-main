@@ -1,13 +1,22 @@
 import { Pool } from 'pg';
 import { UserFactory } from '../persistence/postgresql/UserFactory';
 import { PostgresUserRepository } from '../persistence/postgresql/repositories/UserRepository';
-import { CreateUserCommand, createCreateUserCommandHandler } from '../../application/commands/user/CreateUserCommand';
-import { AuthenticateUserQuery, createAuthenticateUserQueryHandler } from '../../application/queries/user/AuthenticateUserQuery';
+import {
+  CreateUserCommand,
+  createCreateUserCommandHandler,
+} from '../../application/commands/user/CreateUserCommand';
+import {
+  AuthenticateUserQuery,
+  createAuthenticateUserQueryHandler,
+} from '../../application/queries/user/AuthenticateUserQuery';
 
 export class Container {
   private static instance: Container;
+
   private pool: Pool;
+
   private userRepository: PostgresUserRepository;
+
   private userFactory: UserFactory;
 
   private constructor() {
@@ -20,7 +29,10 @@ export class Container {
     this.userFactory = new UserFactory();
 
     // Initialize repositories
-    this.userRepository = new PostgresUserRepository(this.pool, this.userFactory);
+    this.userRepository = new PostgresUserRepository(
+      this.pool,
+      this.userFactory,
+    );
   }
 
   public static getInstance(): Container {
@@ -34,7 +46,7 @@ export class Container {
   public createUserCommandHandler(): CreateUserCommand {
     return createCreateUserCommandHandler(
       this.userRepository,
-      this.userFactory
+      this.userFactory,
     );
   }
 

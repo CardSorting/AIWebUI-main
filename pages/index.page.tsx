@@ -1,14 +1,18 @@
 import { FC } from 'react';
 import { SEO } from '@layout';
-import { Box, Button, Typography, Grid, Paper, Divider, Container, useTheme } from '@mui/material';
+import { Box, Button, Typography, Grid, Paper, Divider, Container, useTheme, alpha } from '@mui/material';
 import { siteDescription } from 'src/constants';
 import { 
   Brush as BrushIcon, 
   Create as CreateIcon, 
   AutoAwesome as AutoAwesomeIcon,
+  AutoFixHigh as AutoFixHighIcon,
+  Psychology as PsychologyIcon,
   ImageSearch as ImageSearchIcon, 
   Palette as PaletteIcon,
-  EmojiEvents as EmojiEventsIcon
+  EmojiEvents as EmojiEventsIcon,
+  Bolt as BoltIcon,
+  TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
 import Image from 'next/image';
 import NextLink from 'next/link';
@@ -16,6 +20,8 @@ import Routes from '@routes';
 import { useType } from '@cardEditor/cardOptions/type';
 import banner from '@assets/images/banner.png';
 import cardImgPaths from '@utils/cardImgPaths';
+import { AICardQuickStart } from '../src/components/homepage/AICardQuickStart';
+import { FeatureShowcase } from '../src/components/homepage/FeatureShowcase';
 
 const Home: FC = () => {
   const { pokemonTypes } = useType();
@@ -50,133 +56,224 @@ const Home: FC = () => {
   return (
     <>
       <SEO
-        fullTitle="PlayMoreTCG | Create AI-powered custom Pokémon cards"
-        description={`${siteDescription} with AI-generated artwork`}
+        fullTitle="Pokécardmaker | AI-Powered Custom Pokémon Card Creator"
+        description={`${siteDescription} - Create complete Pokémon cards with AI-generated artwork, balanced stats, and custom moves in seconds.`}
       />
       <Container maxWidth="lg">
         <Box sx={{ py: 6 }}>
+          {/* Hero Banner */}
           <Paper elevation={3} sx={{ overflow: 'hidden', mb: 6, borderRadius: 2 }}>
-            <Image src={banner} layout="responsive" alt="DreamBees.art banner" />
+            <Image src={banner} layout="responsive" alt="Pokécardmaker banner" />
           </Paper>
 
-          <Typography variant="h1" align="center" gutterBottom sx={{ fontSize: '3rem', fontWeight: 'bold' }}>
-            Create Epic Pokémon Cards
-          </Typography>
-          <Typography variant="h4" align="center" color="text.secondary" gutterBottom sx={{ mb: 6 }}>
-            Powered by AI, Designed by You
-          </Typography>
-
-          <Box display="flex" justifyContent="center" gap={3} mb={8}>
-            <NextLink href={Routes.AIImageGenerator} passHref>
-              <Button variant="contained" startIcon={<BrushIcon />} size="large" color="primary" sx={{ px: 4, py: 1.5 }}>
-                Generate AI Art
-              </Button>
-            </NextLink>
-            <NextLink href={Routes.Creator} passHref>
-              <Button variant="outlined" startIcon={<CreateIcon />} size="large" sx={{ px: 4, py: 1.5 }}>
-                Design Your Card
-              </Button>
-            </NextLink>
-          </Box>
-
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Paper sx={sectionStyle}>
-                <Typography variant="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontSize: '2.5rem' }}>
-                  <AutoAwesomeIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
-                  AI-Powered Artwork
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Transform your ideas into stunning Pokémon card art with our cutting-edge AI generator.
-                </Typography>
-                <Grid container spacing={3} sx={{ flexGrow: 1 }}>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={featureBoxStyle}>
-                      <ImageSearchIcon sx={iconStyle} />
-                      <Typography variant="h6" gutterBottom>Text-to-Image</Typography>
-                      <Typography variant="body2">Describe your vision and watch it come to life in seconds.</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={featureBoxStyle}>
-                      <PaletteIcon sx={iconStyle} />
-                      <Typography variant="h6" gutterBottom>Style Customization</Typography>
-                      <Typography variant="body2">Adjust styles, colors, and compositions to match your preferences.</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-                <Box mt={4}>
-                  <NextLink href={Routes.AIImageGenerator} passHref>
-                    <Button variant="contained" endIcon={<BrushIcon />} size="large" color="secondary" fullWidth sx={{ py: 1.5 }}>
-                      Start Creating AI Art
-                    </Button>
-                  </NextLink>
-                </Box>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Paper sx={sectionStyle}>
-                <Typography variant="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center', fontSize: '2.5rem' }}>
-                  <CreateIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
-                  Custom Card Designer
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  Bring your Pokémon cards to life with our powerful card designer featuring {cardImgPaths.length} unique card types and styles.
-                </Typography>
-                <Grid container spacing={3} sx={{ flexGrow: 1 }}>
-                  <Grid item xs={12} sm={4}>
-                    <Box sx={featureBoxStyle}>
-                      <EmojiEventsIcon sx={iconStyle} />
-                      <Typography variant="h6" gutterBottom>Energy Cards</Typography>
-                      <Typography variant="body2">Create base, special, and prism star energy cards.</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box sx={featureBoxStyle}>
-                      <AutoAwesomeIcon sx={iconStyle} />
-                      <Typography variant="h6" gutterBottom>Trainer Cards</Typography>
-                      <Typography variant="body2">Design supporter, item, and tool cards with various styles.</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box sx={featureBoxStyle}>
-                      <PaletteIcon sx={iconStyle} />
-                      <Typography variant="h6" gutterBottom>Pokémon Cards</Typography>
-                      <Typography variant="body2">Create cards for all {pokemonTypes.length} Pokémon types.</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-                <Box mt={4}>
-                  <NextLink href={Routes.Creator} passHref>
-                    <Button variant="contained" endIcon={<CreateIcon />} size="large" color="secondary" fullWidth sx={{ py: 1.5 }}>
-                      Start Designing Cards
-                    </Button>
-                  </NextLink>
-                </Box>
-              </Paper>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 8 }} />
-
-          <Box textAlign="center">
-            <Typography variant="h2" gutterBottom sx={{ fontSize: '2.5rem' }}>
-              Ready to Create Your Own Pokémon Card?
+          {/* Hero Section */}
+          <Box textAlign="center" mb={8}>
+            <Typography 
+              variant="h1" 
+              align="center" 
+              gutterBottom 
+              sx={{ 
+                fontSize: { xs: '2.5rem', md: '3.5rem' }, 
+                fontWeight: 'bold',
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Create Epic Pokémon Cards
             </Typography>
-            <Typography variant="body1" paragraph sx={{ mb: 4 }}>
-              Start your journey now and bring your unique Pokémon card ideas to life with AI-generated artwork and our powerful card designer.
+            <Typography 
+              variant="h4" 
+              align="center" 
+              color="text.secondary" 
+              gutterBottom 
+              sx={{ mb: 2, fontSize: { xs: '1.5rem', md: '2rem' } }}
+            >
+              Powered by AI, Designed by You
             </Typography>
-            <Box display="flex" justifyContent="center" gap={3}>
+            <Typography 
+              variant="h6" 
+              align="center" 
+              color="text.secondary" 
+              sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}
+            >
+              Generate complete cards with balanced stats, custom moves, and stunning AI artwork - or design every detail yourself with our advanced editor.
+            </Typography>
+
+            {/* Primary CTAs */}
+            <Box display="flex" justifyContent="center" gap={3} mb={2} flexWrap="wrap">
+              <NextLink href={Routes.AICardGenerator} passHref>
+                <Button 
+                  variant="contained" 
+                  startIcon={<AutoFixHighIcon />} 
+                  size="large" 
+                  color="primary" 
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                    '&:hover': {
+                      background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.primary.main})`,
+                      transform: 'translateY(-1px)',
+                      boxShadow: 6,
+                    }
+                  }}
+                >
+                  AI Generate Complete Card
+                </Button>
+              </NextLink>
               <NextLink href={Routes.AIImageGenerator} passHref>
-                <Button variant="contained" endIcon={<BrushIcon />} size="large" color="primary" sx={{ px: 4, py: 1.5 }}>
-                  Generate AI Art
+                <Button 
+                  variant="outlined" 
+                  startIcon={<BrushIcon />} 
+                  size="large" 
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    '&:hover': {
+                      borderWidth: 2,
+                      transform: 'translateY(-1px)',
+                      boxShadow: 4,
+                    }
+                  }}
+                >
+                  Generate AI Art Only
                 </Button>
               </NextLink>
               <NextLink href={Routes.Creator} passHref>
-                <Button variant="contained" endIcon={<CreateIcon />} size="large" sx={{ px: 4, py: 1.5 }}>
-                  Design Your Card
+                <Button 
+                  variant="text" 
+                  startIcon={<CreateIcon />} 
+                  size="large" 
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    borderRadius: 2,
+                    '&:hover': {
+                      transform: 'translateY(-1px)',
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                    }
+                  }}
+                >
+                  Manual Designer
                 </Button>
               </NextLink>
+            </Box>
+
+            {/* Feature badges */}
+            <Box display="flex" justifyContent="center" gap={2} flexWrap="wrap" mb={8}>
+              <Box display="flex" alignItems="center" color="text.secondary">
+                <BoltIcon sx={{ fontSize: 18, mr: 0.5 }} />
+                <Typography variant="caption">Lightning Fast</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" color="text.secondary">
+                <PsychologyIcon sx={{ fontSize: 18, mr: 0.5 }} />
+                <Typography variant="caption">AI Powered</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" color="text.secondary">
+                <TrendingUpIcon sx={{ fontSize: 18, mr: 0.5 }} />
+                <Typography variant="caption">Balanced Stats</Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* AI Quick Start Section */}
+          <Box mb={8}>
+            <AICardQuickStart />
+          </Box>
+
+          <Divider sx={{ my: 8 }} />
+
+          {/* Feature Showcase */}
+          <FeatureShowcase />
+
+          <Divider sx={{ my: 8 }} />
+
+          {/* Final CTA Section */}
+          <Box 
+            textAlign="center" 
+            sx={{
+              p: 6,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.05)})`,
+              borderRadius: 3,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+            }}
+          >
+            <Typography variant="h2" gutterBottom sx={{ fontSize: '2.5rem', fontWeight: 'bold' }}>
+              Ready to Create Your Dream Pokémon Card?
+            </Typography>
+            <Typography variant="body1" paragraph sx={{ mb: 4, fontSize: '1.1rem', maxWidth: 700, mx: 'auto' }}>
+              Join thousands of creators who have brought their Pokémon visions to life. Whether you want instant AI generation or detailed customization, we have the perfect tool for you.
+            </Typography>
+            <Box display="flex" justifyContent="center" gap={3} flexWrap="wrap">
+              <NextLink href={Routes.AICardGenerator} passHref>
+                <Button 
+                  variant="contained" 
+                  startIcon={<AutoFixHighIcon />} 
+                  size="large" 
+                  color="primary" 
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                    '&:hover': {
+                      background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.primary.main})`,
+                      transform: 'translateY(-2px)',
+                      boxShadow: 8,
+                    }
+                  }}
+                >
+                  Start with AI Generation
+                </Button>
+              </NextLink>
+              <NextLink href={Routes.Creator} passHref>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<CreateIcon />} 
+                  size="large" 
+                  sx={{ 
+                    px: 4, 
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    '&:hover': {
+                      borderWidth: 2,
+                      transform: 'translateY(-2px)',
+                      boxShadow: 6,
+                    }
+                  }}
+                >
+                  Use Manual Designer
+                </Button>
+              </NextLink>
+            </Box>
+
+            <Box mt={4} display="flex" justifyContent="center" gap={4} flexWrap="wrap">
+              <Typography variant="body2" color="text.secondary" display="flex" alignItems="center">
+                <PsychologyIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                AI-Powered Generation
+              </Typography>
+              <Typography variant="body2" color="text.secondary" display="flex" alignItems="center">
+                <BoltIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                Lightning Fast Results
+              </Typography>
+              <Typography variant="body2" color="text.secondary" display="flex" alignItems="center">
+                <TrendingUpIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                Competitive Balance
+              </Typography>
             </Box>
           </Box>
         </Box>

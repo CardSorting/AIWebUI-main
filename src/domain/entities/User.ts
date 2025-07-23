@@ -17,10 +17,15 @@ interface UserProps {
 
 export class User extends DomainEntity {
   private readonly _email: Email;
+
   private readonly _password: Password;
+
   private readonly _name: string;
+
   private _credits: Credits;
+
   private _membershipTier?: string;
+
   private _membershipExpiry?: Date;
 
   private constructor(props: UserProps) {
@@ -38,19 +43,19 @@ export class User extends DomainEntity {
     email: Email,
     password: Password,
     name: string,
-    initialCredits: number = 10
+    initialCredits = 10,
   ): User {
     const id = UserId.generate();
     const credits = Credits.fromNumber(initialCredits);
-    
+
     const user = new User({
       id,
       email,
       password,
       name,
-      credits
+      credits,
     });
-    
+
     user.addDomainEvent(new UserCreatedEvent(id, email));
     return user;
   }
@@ -94,12 +99,12 @@ export class User extends DomainEntity {
     if (amount <= 0) {
       throw new Error('Credit deduction amount must be positive');
     }
-    
+
     const newCredits = Credits.fromNumber(this._credits.value - amount);
     if (newCredits.value < 0) {
       throw new Error('Insufficient credits');
     }
-    
+
     this._credits = newCredits;
   }
 
@@ -107,7 +112,7 @@ export class User extends DomainEntity {
     if (amount <= 0) {
       throw new Error('Credit addition amount must be positive');
     }
-    
+
     this._credits = Credits.fromNumber(this._credits.value + amount);
   }
 
@@ -115,7 +120,7 @@ export class User extends DomainEntity {
     if (expiryDate < new Date()) {
       throw new Error('Membership expiry date cannot be in the past');
     }
-    
+
     this._membershipTier = tier;
     this._membershipExpiry = expiryDate;
   }
@@ -124,7 +129,7 @@ export class User extends DomainEntity {
     if (!this._membershipTier || !this._membershipExpiry) {
       return false;
     }
-    
+
     return this._membershipExpiry > new Date();
   }
 }

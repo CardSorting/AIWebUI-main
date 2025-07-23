@@ -2,6 +2,7 @@ import { ValueObject } from './base/ValueObject';
 
 export class Credits extends ValueObject<number> {
   private static readonly MIN_CREDITS = 0;
+
   private static readonly MAX_CREDITS = 1000000; // 1 million credit limit
 
   private constructor(value: number) {

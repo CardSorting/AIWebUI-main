@@ -1,14 +1,14 @@
 // src/components/inputs/FileUploader/index.tsx
 
-import React, { FC, useState, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
+  Alert,
+  Box,
   Button,
+  CircularProgress,
   FormControl,
   FormHelperText,
-  Box,
-  CircularProgress,
   Snackbar,
-  Alert,
 } from '@mui/material';
 import {
   ContentPasteSearch as ClipboardIcon,
@@ -35,9 +35,12 @@ const FileUploader: FC<FileUploaderProps> = ({
     setSuccessMessage(message);
   }, []);
 
-  const handleChange = useCallback((name: string, url: string, metadata: any) => {
-    onChange(name, url, metadata);
-  }, [onChange]);
+  const handleChange = useCallback(
+    (name: string, url: string, metadata: any) => {
+      onChange(name, url, metadata);
+    },
+    [onChange],
+  );
 
   const { upload, isLoading, fileName } = useFileUpload({
     onChange: handleChange,
@@ -69,7 +72,13 @@ const FileUploader: FC<FileUploaderProps> = ({
           variant="outlined"
           color="inherit"
           component="label"
-          startIcon={isLoading ? <CircularProgress color="inherit" size={20} /> : <UploadFileIcon />}
+          startIcon={
+            isLoading ? (
+              <CircularProgress color="inherit" size={20} />
+            ) : (
+              <UploadFileIcon />
+            )
+          }
         >
           <ButtonLabel>{buttonText || (fileName ?? <>&nbsp;</>)}</ButtonLabel>
           <input
@@ -95,8 +104,16 @@ const FileUploader: FC<FileUploaderProps> = ({
         </Button>
       </Box>
       {errorMessage && <FormHelperText>{errorMessage}</FormHelperText>}
-      <Snackbar open={!!successMessage} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
           {successMessage}
         </Alert>
       </Snackbar>

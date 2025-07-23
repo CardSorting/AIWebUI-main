@@ -19,11 +19,16 @@ export interface IUserQueries {
   }>;
   isEmailTaken(email: string): Promise<boolean>;
   getTotalUsers(): Promise<number>;
-  getUsersCreatedBetween(startDate: Date, endDate: Date): Promise<Array<{
-    id: string;
-    email: string;
-    createdAt: Date;
-  }>>;
+  getUsersCreatedBetween(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<
+    Array<{
+      id: string;
+      email: string;
+      createdAt: Date;
+    }>
+  >;
 }
 
 // Factory interface for creating User entities

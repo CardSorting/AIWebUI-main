@@ -3,6 +3,7 @@ import { UserId } from '../../value-objects/UserId';
 
 export abstract class DomainEntity {
   private _id: UserId;
+
   private _domainEvents: DomainEvent[] = [];
 
   protected constructor(id: UserId) {

@@ -1,7 +1,7 @@
 // src/components/EmbedGrid/EmbedGridModal.tsx
 
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmbedGrid from './EmbedGrid';
 
@@ -17,7 +17,12 @@ interface EmbedGridModalProps {
   itemsPerPage: number;
 }
 
-const EmbedGridModal: React.FC<EmbedGridModalProps> = ({ open, onClose, embeds, itemsPerPage }) => {
+const EmbedGridModal: React.FC<EmbedGridModalProps> = ({
+  open,
+  onClose,
+  embeds,
+  itemsPerPage,
+}) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>

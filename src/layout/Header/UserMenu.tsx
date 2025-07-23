@@ -1,6 +1,11 @@
 import { FC } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import type { Session } from 'next-auth';
+import { useRouter } from 'next/router';
+import { Avatar, Box, Button, Chip, Typography } from '@mui/material';
+import { LogoutOutlined as LogoutIcon } from '@mui/icons-material';
+import NextLink from 'next/link';
+import Routes from '@routes';
 
 interface CustomSession extends Session {
   user: {
@@ -8,19 +13,8 @@ interface CustomSession extends Session {
     name: string;
     email: string;
     credits: number;
-  }
+  };
 }
-import { useRouter } from 'next/router';
-import {
-  Avatar,
-  Box,
-  Button,
-  Typography,
-  Chip,
-} from '@mui/material';
-import { LogoutOutlined as LogoutIcon } from '@mui/icons-material';
-import NextLink from 'next/link';
-import Routes from '@routes';
 
 const UserMenu: FC = () => {
   const { data: session } = useSession() as { data: CustomSession | null };

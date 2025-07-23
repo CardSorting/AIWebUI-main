@@ -1,7 +1,14 @@
 // src/components/EmbedGrid/EmbedGrid.tsx
 
-import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardMedia, CardContent, Typography, Pagination } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  Pagination,
+  Typography,
+} from '@mui/material';
 
 interface EmbedData {
   imageUrl: string | null;
@@ -41,13 +48,20 @@ const EmbedGrid: React.FC<EmbedGridProps> = ({ embeds, itemsPerPage }) => {
               />
               <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
-                  <strong>Seed:</strong> {embed.fullResult.seed}<br />
-                  <strong>Prompt:</strong> {embed.fullResult.input.prompt}<br />
-                  <strong>Image Details:</strong><br />
-                  Width: {embed.fullResult.images[0]?.width}<br />
-                  Height: {embed.fullResult.images[0]?.height}<br />
-                  Type: {embed.fullResult.images[0]?.content_type}<br />
-                  <strong>NSFW Concepts:</strong> {embed.fullResult.has_nsfw_concepts?.join(', ')}
+                  <strong>Seed:</strong> {embed.fullResult.seed}
+                  <br />
+                  <strong>Prompt:</strong> {embed.fullResult.input.prompt}
+                  <br />
+                  <strong>Image Details:</strong>
+                  <br />
+                  Width: {embed.fullResult.images[0]?.width}
+                  <br />
+                  Height: {embed.fullResult.images[0]?.height}
+                  <br />
+                  Type: {embed.fullResult.images[0]?.content_type}
+                  <br />
+                  <strong>NSFW Concepts:</strong>{' '}
+                  {embed.fullResult.has_nsfw_concepts?.join(', ')}
                 </Typography>
               </CardContent>
             </Card>

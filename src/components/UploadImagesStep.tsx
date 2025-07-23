@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, Paper, IconButton, useTheme } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import dynamic from 'next/dynamic';
 import CircularProgress from '@mui/material/CircularProgress';
 import Image from 'next/image';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  Draggable,
+  DropResult,
+  Droppable,
+} from 'react-beautiful-dnd';
 
 interface UploadImagesStepProps {
   handleMultipleImageUpload: (name: string, url: string) => void;
@@ -18,14 +30,17 @@ interface UploadedImage {
 }
 
 const FileUploader = dynamic(
-  () => import('@components/inputs/FileUploader').then((mod) => mod.default),
+  () => import('@components/inputs/FileUploader').then(mod => mod.default),
   {
     loading: () => <CircularProgress />,
     ssr: false,
-  }
+  },
 );
 
-const UploadImagesStep: React.FC<UploadImagesStepProps> = ({ handleMultipleImageUpload, handleNext }) => {
+const UploadImagesStep: React.FC<UploadImagesStepProps> = ({
+  handleMultipleImageUpload,
+  handleNext,
+}) => {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const theme = useTheme();
@@ -63,7 +78,7 @@ const UploadImagesStep: React.FC<UploadImagesStepProps> = ({ handleMultipleImage
       };
 
       // Ensure the state is updated with the new image
-      setUploadedImages((prev) => [...prev, newImage]);
+      setUploadedImages(prev => [...prev, newImage]);
 
       // Trigger the upload callback
       handleMultipleImageUpload(metadata.name, metadata.backblazeUrl);
@@ -76,7 +91,7 @@ const UploadImagesStep: React.FC<UploadImagesStepProps> = ({ handleMultipleImage
 
   // Handle image removal from the UI only
   const handleRemoveImage = (id: string) => {
-    setUploadedImages((prev) => prev.filter((img) => img.id !== id));
+    setUploadedImages(prev => prev.filter(img => img.id !== id));
   };
 
   // Handle drag and drop reordering of images
@@ -114,7 +129,7 @@ const UploadImagesStep: React.FC<UploadImagesStepProps> = ({ handleMultipleImage
       {/* Drag and Drop Context */}
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="images" direction="horizontal">
-          {(provided) => (
+          {provided => (
             <Box
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -152,7 +167,11 @@ const UploadImagesStep: React.FC<UploadImagesStepProps> = ({ handleMultipleImage
                 </Box>
               ) : (
                 uploadedImages.map((image, index) => (
-                  <Draggable key={image.id} draggableId={image.id} index={index}>
+                  <Draggable
+                    key={image.id}
+                    draggableId={image.id}
+                    index={index}
+                  >
                     {(provided, snapshot) => (
                       <Box
                         ref={provided.innerRef}

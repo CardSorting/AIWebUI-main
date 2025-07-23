@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  Box,
   Button,
   Chip,
   CircularProgress,
-  Alert,
-  Snackbar
+  Paper,
+  Snackbar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
 } from '@mui/material';
 
 interface Order {
@@ -34,7 +34,11 @@ const AdminPanel: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
 
   useEffect(() => {
     fetchOrders();
@@ -71,10 +75,18 @@ const AdminPanel: React.FC = () => {
         throw new Error('Failed to update order status');
       }
       await fetchOrders(); // Refresh the order list
-      setSnackbar({ open: true, message: 'Order status updated successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Order status updated successfully',
+        severity: 'success',
+      });
     } catch (error) {
       console.error('Error updating order status:', error);
-      setSnackbar({ open: true, message: 'Failed to update order status', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to update order status',
+        severity: 'error',
+      });
     }
   };
 
@@ -93,7 +105,12 @@ const AdminPanel: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -127,31 +144,42 @@ const AdminPanel: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => (
+            {orders.map(order => (
               <TableRow key={order.id}>
                 <TableCell>{order.id.slice(0, 8)}</TableCell>
                 <TableCell>
-                  <img src={order.imageMetadata.imageUrl} alt={order.imageMetadata.prompt} style={{ width: 50, height: 50, objectFit: 'cover' }} />
+                  <img
+                    src={order.imageMetadata.imageUrl}
+                    alt={order.imageMetadata.prompt}
+                    style={{ width: 50, height: 50, objectFit: 'cover' }}
+                  />
                 </TableCell>
-                <TableCell>{order.imageMetadata.prompt.slice(0, 30)}...</TableCell>
+                <TableCell>
+                  {order.imageMetadata.prompt.slice(0, 30)}...
+                </TableCell>
                 <TableCell>{order.printOptions.size}</TableCell>
                 <TableCell>{order.printOptions.quantity}</TableCell>
                 <TableCell>
-                  <Chip label={order.status} color={getStatusColor(order.status)} />
+                  <Chip
+                    label={order.status}
+                    color={getStatusColor(order.status)}
+                  />
                 </TableCell>
-                <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
                 <TableCell>
-                  <Button 
-                    variant="outlined" 
-                    size="small" 
+                  {new Date(order.createdAt).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    size="small"
                     onClick={() => handleUpdateStatus(order.id, 'processing')}
                     disabled={order.status !== 'pending'}
                   >
                     Process
                   </Button>
-                  <Button 
-                    variant="outlined" 
-                    size="small" 
+                  <Button
+                    variant="outlined"
+                    size="small"
                     onClick={() => handleUpdateStatus(order.id, 'shipped')}
                     disabled={order.status !== 'processing'}
                     sx={{ ml: 1 }}
@@ -164,12 +192,16 @@ const AdminPanel: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={6000} 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
-        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>

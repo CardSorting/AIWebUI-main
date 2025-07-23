@@ -1,7 +1,6 @@
-import { GitHub as GitHubIcon } from '@mui/icons-material';
-import { Box, Paper, Typography, Link } from '@mui/material';
-import FooterDivider from './components/FooterDivider';
+import { Box, Link, Paper, Typography } from '@mui/material';
 import { FC } from 'react';
+import FooterDivider from './components/FooterDivider';
 
 const Footer: FC = () => (
   <Paper
@@ -20,7 +19,7 @@ const Footer: FC = () => (
     <Typography variant="h6" align="center">
       © {new Date().getFullYear()} PlayMoreTCG
     </Typography>
-    
+
     <Box ml={2.5} mr={1} py={1} display={['none', undefined, 'block']}>
       <FooterDivider />
     </Box>

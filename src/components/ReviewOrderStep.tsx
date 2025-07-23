@@ -1,7 +1,14 @@
 // components/ReviewOrderStep.tsx
 
 import React from 'react';
-import { Box, Button, Typography, List, ListItem, ListItemText, Grid } from '@mui/material';
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import { OrderItem } from '@/types'; // Define this type appropriately
 
 interface ReviewOrderStepProps {
@@ -11,7 +18,12 @@ interface ReviewOrderStepProps {
   handleNext: () => void;
 }
 
-const ReviewOrderStep: React.FC<ReviewOrderStepProps> = ({ orderItems, calculateTotalPrice, handleBack, handleNext }) => {
+const ReviewOrderStep: React.FC<ReviewOrderStepProps> = ({
+  orderItems,
+  calculateTotalPrice,
+  handleBack,
+  handleNext,
+}) => {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
@@ -20,39 +32,63 @@ const ReviewOrderStep: React.FC<ReviewOrderStepProps> = ({ orderItems, calculate
       <List>
         {orderItems.map((item, index) => (
           <ListItem key={item.id} divider>
-            <ListItemText 
-              primary={`Card ${index + 1}: ${item.uploadedImage?.name}`} 
+            <ListItemText
+              primary={`Card ${index + 1}: ${item.uploadedImage?.name}`}
               secondary={
                 <>
-                  <Typography variant="body2">Size: {item.printOptions.size.charAt(0).toUpperCase() + item.printOptions.size.slice(1)}</Typography>
-                  <Typography variant="body2">Quantity: {item.printOptions.quantity}</Typography>
-                  <Typography variant="body2">Total Price: ${(item.printOptions.quantity * getPricePerUnit(item.printOptions.quantity) / 100).toFixed(2)}</Typography>
+                  <Typography variant="body2">
+                    Size:{' '}
+                    {item.printOptions.size.charAt(0).toUpperCase() +
+                      item.printOptions.size.slice(1)}
+                  </Typography>
+                  <Typography variant="body2">
+                    Quantity: {item.printOptions.quantity}
+                  </Typography>
+                  <Typography variant="body2">
+                    Total Price: $
+                    {(
+                      (item.printOptions.quantity *
+                        getPricePerUnit(item.printOptions.quantity)) /
+                      100
+                    ).toFixed(2)}
+                  </Typography>
                 </>
-              } 
+              }
             />
           </ListItem>
         ))}
         {/* Total Summary */}
         <ListItem>
-          <ListItemText 
+          <ListItemText
             primary={
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                 Total Price
               </Typography>
-            } 
+            }
             secondary={
-              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
                 ${calculateTotalPrice().toFixed(2)}
               </Typography>
-            } 
+            }
           />
         </ListItem>
       </List>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-        <Button variant="outlined" onClick={handleBack} aria-label="Previous Step">
+        <Button
+          variant="outlined"
+          onClick={handleBack}
+          aria-label="Previous Step"
+        >
           Back
         </Button>
-        <Button variant="contained" onClick={handleNext} aria-label="Proceed to Checkout">
+        <Button
+          variant="contained"
+          onClick={handleNext}
+          aria-label="Proceed to Checkout"
+        >
           Proceed to Checkout
         </Button>
       </Box>

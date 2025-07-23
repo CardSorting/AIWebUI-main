@@ -8,7 +8,7 @@ const useCardOptions = <
   V extends T = { [P in keyof T]: CardInterface[P] },
 >(
   properties: (keyof T)[],
-): V & { 
+): V & {
   setState: (values: Partial<CardInterface>) => void;
   setCardImage: (imageUrl: string) => void;
 } => {

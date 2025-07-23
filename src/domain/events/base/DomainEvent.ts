@@ -1,5 +1,6 @@
 export abstract class DomainEvent {
   public readonly dateTimeOccurred: Date;
+
   protected readonly eventName: string;
 
   protected constructor(eventName: string) {

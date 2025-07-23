@@ -1,4 +1,7 @@
-import { IUserRepository, IUserFactory } from '../../../domain/repositories/IUserRepository';
+import {
+  IUserFactory,
+  IUserRepository,
+} from '../../../domain/repositories/IUserRepository';
 import { Email } from '../../../domain/value-objects/Email';
 
 export interface CreateUserCommandParams {
@@ -11,15 +14,15 @@ export interface CreateUserCommandParams {
 export class CreateUserCommand {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly userFactory: IUserFactory
+    private readonly userFactory: IUserFactory,
   ) {}
 
   public async execute(params: CreateUserCommandParams): Promise<string> {
     // Check if email is already taken
     const emailExists = await this.userRepository.exists(
-      Email.create(params.email)
+      Email.create(params.email),
     );
-    
+
     if (emailExists) {
       throw new Error('Email is already taken');
     }
@@ -29,7 +32,7 @@ export class CreateUserCommand {
       email: params.email,
       password: params.password,
       name: params.name,
-      initialCredits: params.initialCredits
+      initialCredits: params.initialCredits,
     });
 
     // Save user
@@ -43,7 +46,7 @@ export class CreateUserCommand {
 // Command Handler factory
 export const createCreateUserCommandHandler = (
   userRepository: IUserRepository,
-  userFactory: IUserFactory
+  userFactory: IUserFactory,
 ) => {
   return new CreateUserCommand(userRepository, userFactory);
 };

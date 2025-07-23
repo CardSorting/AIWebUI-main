@@ -1,5 +1,4 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Link from 'next/link';
 import { Button } from '@mui/material';
 
 export const LoginButton = () => {
@@ -13,11 +12,10 @@ export const LoginButton = () => {
         Logout
       </Button>
     );
-  } else {
-    return (
-      <Button href="/login" variant="contained" color="primary">
-        Login
-      </Button>
-    );
   }
+  return (
+    <Button href="/login" variant="contained" color="primary">
+      Login
+    </Button>
+  );
 };

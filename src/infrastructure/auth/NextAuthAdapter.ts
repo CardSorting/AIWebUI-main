@@ -1,12 +1,12 @@
+import type { User } from 'next-auth';
 import { container } from '../di/container';
 import { Email } from '../../domain/value-objects/Email';
 import { UserId } from '../../domain/value-objects/UserId';
-import type { User } from 'next-auth';
 
 export class NextAuthAdapter {
   public static async verifyCredentials(
     email: string,
-    password: string
+    password: string,
   ): Promise<User | null> {
     try {
       const authQuery = container.authenticateUserQueryHandler();

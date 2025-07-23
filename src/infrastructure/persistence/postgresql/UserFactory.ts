@@ -14,13 +14,8 @@ export class UserFactory implements IUserFactory {
   }): Promise<User> {
     const email = Email.create(params.email);
     const password = await Password.createFromPlaintext(params.password);
-    
-    return User.create(
-      email,
-      password,
-      params.name,
-      params.initialCredits
-    );
+
+    return User.create(email, password, params.name, params.initialCredits);
   }
 
   public reconstitute(params: {

@@ -1,12 +1,19 @@
 import { Brush as BrushIcon } from '@mui/icons-material';
-import { Box, List, ListItemButton, ListItemIcon, ListItemText, Link } from '@mui/material';
+import {
+  Box,
+  Link,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { FC } from 'react';
 
 const MobileHeader: FC = () => {
   return (
     <>
-      <SwipeableDrawer anchor="left" open={true} onClose={() => {}} onOpen={() => {}}>
+      <SwipeableDrawer anchor="left" open onClose={() => {}} onOpen={() => {}}>
         <Box role="presentation" sx={{ width: 250 }}>
           <List>
             <Link href="/create-custom-card" passHref>
@@ -14,7 +21,10 @@ const MobileHeader: FC = () => {
                 <ListItemIcon>
                   <BrushIcon color="action" />
                 </ListItemIcon>
-                <ListItemText primary="Create Custom Card" primaryTypographyProps={{ fontWeight: 'medium' }} />
+                <ListItemText
+                  primary="Create Custom Card"
+                  primaryTypographyProps={{ fontWeight: 'medium' }}
+                />
               </ListItemButton>
             </Link>
 
@@ -28,7 +38,8 @@ const MobileHeader: FC = () => {
               <ListItemButton component="a">
                 <ListItemIcon>
                   {/* You can choose any icon or leave it blank */}
-                  <BrushIcon color="action" /> {/* Replace with an appropriate Patreon-related icon if needed */}
+                  <BrushIcon color="action" />{' '}
+                  {/* Replace with an appropriate Patreon-related icon if needed */}
                 </ListItemIcon>
                 <ListItemText
                   primary="Support me on Patreon"

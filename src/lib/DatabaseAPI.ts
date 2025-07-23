@@ -33,7 +33,9 @@ export class DatabaseAPI {
     if (this.pool) return;
 
     this.pool = new Pool({
-      connectionString: process.env.DATABASE_URL || 'postgresql://postgres:ukedAhWBKMnlkFQAnBylDuHDkkWYeMhY@monorail.proxy.rlwy.net:50047/railway'
+      connectionString:
+        process.env.DATABASE_URL ||
+        'postgresql://postgres:ukedAhWBKMnlkFQAnBylDuHDkkWYeMhY@monorail.proxy.rlwy.net:50047/railway',
     });
 
     // Create tables if they don't exist
@@ -67,7 +69,11 @@ export class DatabaseAPI {
   }
 
   // Create a new user
-  async createUser(name: string, email: string, password: string): Promise<User> {
+  async createUser(
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<User> {
     if (!this.pool) throw new Error('Database not initialized');
 
     const client = await this.pool.connect();
@@ -81,7 +87,7 @@ export class DatabaseAPI {
       const newId = uuidv4();
       const result = await client.query(
         'INSERT INTO users (id, name, email, password, credits) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [newId, name, email, hashedPassword, 10]
+        [newId, name, email, hashedPassword, 10],
       );
 
       const user = result.rows[0];
@@ -101,7 +107,10 @@ export class DatabaseAPI {
   async getUserByEmail(email: string): Promise<User | null> {
     if (!this.pool) throw new Error('Database not initialized');
 
-    const result = await this.pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const result = await this.pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email],
+    );
     return result.rows[0] || null;
   }
 
@@ -109,12 +118,17 @@ export class DatabaseAPI {
   async getUserById(id: string): Promise<User | null> {
     if (!this.pool) throw new Error('Database not initialized');
 
-    const result = await this.pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const result = await this.pool.query('SELECT * FROM users WHERE id = $1', [
+      id,
+    ]);
     return result.rows[0] || null;
   }
 
   // Verify user credentials during login
-  async verifyUserCredentials(email: string, password: string): Promise<User | null> {
+  async verifyUserCredentials(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
     const user = await this.getUserByEmail(email);
     if (!user) return null;
 
@@ -123,7 +137,9 @@ export class DatabaseAPI {
   }
 
   // Save image metadata
-  async saveImageMetadata(data: Omit<ImageMetadata, 'id' | 'createdAt'>): Promise<ImageMetadata> {
+  async saveImageMetadata(
+    data: Omit<ImageMetadata, 'id' | 'createdAt'>,
+  ): Promise<ImageMetadata> {
     if (!this.pool) throw new Error('Database not initialized');
 
     const result = await this.pool.query(
@@ -140,7 +156,7 @@ export class DatabaseAPI {
         data.fullResult,
         data.imageData,
         data.userId,
-      ]
+      ],
     );
 
     const savedData = result.rows[0];
@@ -150,10 +166,10 @@ export class DatabaseAPI {
   }
 
   // Get recent images (optionally filtered by user)
-  async getRecentImages(limit: number = 20, userId?: string): Promise<ImageMetadata[]> {
+  async getRecentImages(limit = 20, userId?: string): Promise<ImageMetadata[]> {
     if (!this.pool) throw new Error('Database not initialized');
 
-    const query = userId 
+    const query = userId
       ? 'SELECT * FROM image_metadata WHERE userId = $1 ORDER BY createdAt DESC LIMIT $2'
       : 'SELECT * FROM image_metadata ORDER BY createdAt DESC LIMIT $1';
 
@@ -167,7 +183,10 @@ export class DatabaseAPI {
   async getUserCredits(userId: string): Promise<number> {
     if (!this.pool) throw new Error('Database not initialized');
 
-    const result = await this.pool.query('SELECT credits FROM users WHERE id = $1', [userId]);
+    const result = await this.pool.query(
+      'SELECT credits FROM users WHERE id = $1',
+      [userId],
+    );
     return result.rows[0]?.credits || 0;
   }
 
@@ -177,34 +196,41 @@ export class DatabaseAPI {
 
     await this.pool.query(
       'UPDATE users SET credits = credits + $1 WHERE id = $2',
-      [creditChange, userId]
+      [creditChange, userId],
     );
   }
 
   // Get cached membership status for a user
-  async getCachedMembershipStatus(userId: string): Promise<{ membershipTier: string | null, membershipExpiry: number | null } | null> {
+  async getCachedMembershipStatus(userId: string): Promise<{
+    membershipTier: string | null;
+    membershipExpiry: number | null;
+  } | null> {
     if (!this.pool) throw new Error('Database not initialized');
 
     const result = await this.pool.query(
       'SELECT membershipTier, membershipExpiry FROM users WHERE id = $1',
-      [userId]
+      [userId],
     );
 
     if (!result.rows[0]) return null;
 
     return {
       membershipTier: result.rows[0].membershipTier,
-      membershipExpiry: result.rows[0].membershipExpiry
+      membershipExpiry: result.rows[0].membershipExpiry,
     };
   }
 
   // Cache membership status with expiration time
-  async cacheMembershipStatus(userId: string, membershipTier: string, expiry: number): Promise<void> {
+  async cacheMembershipStatus(
+    userId: string,
+    membershipTier: string,
+    expiry: number,
+  ): Promise<void> {
     if (!this.pool) throw new Error('Database not initialized');
 
     await this.pool.query(
       'UPDATE users SET membershipTier = $1, membershipExpiry = $2 WHERE id = $3',
-      [membershipTier, expiry, userId]
+      [membershipTier, expiry, userId],
     );
   }
 

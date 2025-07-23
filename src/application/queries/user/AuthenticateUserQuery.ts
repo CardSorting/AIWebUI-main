@@ -20,11 +20,11 @@ export class AuthenticateUserQuery {
   constructor(private readonly userRepository: IUserRepository) {}
 
   public async execute(
-    params: AuthenticateUserQueryParams
+    params: AuthenticateUserQueryParams,
   ): Promise<AuthenticatedUserDTO | null> {
     // Find user by email
     const user = await this.userRepository.findByEmail(
-      Email.create(params.email)
+      Email.create(params.email),
     );
 
     if (!user) {
@@ -55,7 +55,7 @@ export class AuthenticateUserQuery {
 
 // Query Handler factory
 export const createAuthenticateUserQueryHandler = (
-  userRepository: IUserRepository
+  userRepository: IUserRepository,
 ) => {
   return new AuthenticateUserQuery(userRepository);
 };

@@ -3,10 +3,7 @@ import { Email } from '../value-objects/Email';
 import { UserId } from '../value-objects/UserId';
 
 export class UserCreatedEvent extends DomainEvent {
-  constructor(
-    private readonly userId: UserId,
-    private readonly email: Email
-  ) {
+  constructor(private readonly userId: UserId, private readonly email: Email) {
     super('UserCreated');
   }
 
@@ -24,7 +21,7 @@ export class UserCreditsUpdatedEvent extends DomainEvent {
   constructor(
     private readonly userId: UserId,
     private readonly previousCredits: number,
-    private readonly newCredits: number
+    private readonly newCredits: number,
   ) {
     super('UserCreditsUpdated');
   }
@@ -45,7 +42,7 @@ export class UserMembershipUpdatedEvent extends DomainEvent {
   constructor(
     private readonly userId: UserId,
     private readonly membershipTier: string,
-    private readonly expiryDate: Date
+    private readonly expiryDate: Date,
   ) {
     super('UserMembershipUpdated');
   }

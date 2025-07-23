@@ -1,7 +1,7 @@
-import type { DefaultSession, DefaultUser } from "next-auth"
-import type { DefaultJWT } from "next-auth/jwt"
+import type { DefaultSession, DefaultUser } from 'next-auth';
+import type { DefaultJWT } from 'next-auth/jwt';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface User extends DefaultUser {
     id: string;
     credits: number;
@@ -10,12 +10,12 @@ declare module "next-auth" {
   }
 
   interface Session extends DefaultSession {
-    user: User & DefaultSession["user"];
+    user: User & DefaultSession['user'];
     expires: string;
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT extends DefaultJWT {
     id: string;
     credits: number;
@@ -28,7 +28,7 @@ export interface AuthCallbacks {
   jwt: {
     token: JWT;
     user?: User;
-    trigger?: "signIn" | "signUp" | "update";
+    trigger?: 'signIn' | 'signUp' | 'update';
     session?: Session;
   };
   session: {

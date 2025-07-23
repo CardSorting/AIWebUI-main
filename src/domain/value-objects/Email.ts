@@ -11,7 +11,7 @@ export class Email extends ValueObject<string> {
     if (!emailRegex.test(email)) {
       throw new Error('Invalid email format');
     }
-    
+
     if (email.length > 255) {
       throw new Error('Email is too long');
     }
